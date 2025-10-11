@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KJC Package Referral Auto-Stake</title>
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- Web3.js -->
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+
+  <!-- สคริปต์หลักของ DApp (มี ABI และที่อยู่สัญญาในไฟล์นี้แล้ว) -->
+  <script defer src="public.js"></script>
+
+  <style>
+    /* เสริมเล็กน้อยกรณีไม่มี style.css */
+    body{background:#0f1220;color:#ffd84d;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial}
+    .wrap{max-width:980px;margin:24px auto;padding:0 16px}
+    .card{background:#171a2b;border:1px solid #2a2e4a;border-radius:12px;padding:18px;margin:18px 0}
+    h1{font-size:28px;margin:0 0 8px}
+    .muted{color:#b9b9c9;font-size:14px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .mono{font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    input[type=text]{width:100%;max-width:480px;padding:10px;border-radius:8px;border:1px solid #2c3152;background:#12162a;color:#fff}
+    button{background:#ffd84d;color:#000;border:0;border-radius:8px;padding:10px 14px;font-weight:700;cursor:pointer}
+    button.secondary{background:#272a42;color:#ffd84d;border:1px solid #3b3f63}
+    .pkg{border:1px solid #2b3050;border-radius:10px;padding:14px;margin:12px 0;background:#141832}
+    .pkg h3{margin:0 0 6px}
+    .pkg .actions{margin-top:10px}
+    .note{font-size:12px;color:#aeb0c6;margin-top:6px}
+    @media (min-width:720px){.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="row" style="justify-content:space-between">
+      <h1>🎁 KJC Package Referral Auto-Stake</h1>
+      <div class="row">
+        <button id="btnConnect" onclick="connectWallet()">เชื่อมต่อกระเป๋า</button>
+        <span class="muted">✅ <span id="wallet" class="mono">ยังไม่เชื่อมต่อ</span></span>
+      </div>
+    </div>
+    <div class="muted">Contract: <span id="ca" class="mono">0x…</span></div>
+
+    <!-- ผู้แนะนำ (Referrer) -->
+    <div class="card">
+      <h2>👥 ผู้ผ่านแนะนำ (Referrer)</h2>
+      <div class="row">
+        <input id="refInput" type="text" placeholder="กรอก Address ผู้แนะนำ เช่น 0x..." />
+        <button onclick="bindReferrer()">บันทึก Referrer</button>
+      </div>
+      <p class="muted">* ระบบจะผูก Referrer ที่บันทึกไว้โดยอัตโนมัติเมื่อคุณซื้อแพ็กเกจ</p>
+
+      <div style="margin-top:12px">
+        <div class="muted">Referrer ปัจจุบันในสัญญา:</div>
+        <div class="mono" id="refDisplay">(ยังไม่มี)</div>
+      </div>
+    </div>
+
+    <!-- ลิงก์แนะนำของฉัน -->
+    <div class="card">
+      <h2>🔗 ลิงก์แนะนำของคุณ</h2>
+      <div class="row">
+        <input id="myRefLink" type="text" readonly placeholder="(ยังไม่มี – เชื่อมต่อกระเป๋าก่อน)"/>
+        <button class="secondary" onclick="genMyLink()">สร้างลิงก์</button>
+        <button onclick="copyRefLink()">คัดลอกลิงก์</button>
+      </div>
+      <p class="muted">* แชร์ลิงก์นี้ให้เพื่อน เมื่อคนซื้อแพ็กเกจผ่านลิงก์ของคุณ ระบบจะผูกเป็นผู้แนะนำให้คุณอัตโนมัติ</p>
+    </div>
+
+    <!-- แพ็กเกจ -->
+    <div class="card">
+      <h2>📦 แพ็กเกจที่เปิดให้ซื้อ</h2>
+      <div id="packageList"></div>
+    </div>
+  </div>
+
+  <!-- helper เฉพาะหน้า HTML นี้ -->
+  <script>
+    // สร้างลิงก์แนะนำจาก account ปัจจุบัน
+    function genMyLink(){
+      if (typeof account !== 'string' || !account) {
+        document.getElementById('myRefLink').value = '(ยังไม่มี – เชื่อมต่อกระเป๋าก่อน)';
+        return;
+      }
+      const url = new URL(window.location.href);
+      url.searchParams.set('ref', account);
+      document.getElementById('myRefLink').value = url.toString();
+    }
+    // คัดลอกลิงก์
+    function copyRefLink(){
+      const input = document.getElementById('myRefLink');
+      if (!input.value) { return; }
+      input.select(); input.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(input.value);
+      // แจ้งแบบง่าย ๆ
+      const tip = document.createElement('div');
+      tip.textContent = 'คัดลอกลิงก์แล้ว ✅';
+      tip.style.position='fixed'; tip.style.bottom='18px'; tip.style.left='50%';
+      tip.style.transform='translateX(-50%)'; tip.style.background='#20bf6b';
+      tip.style.color='#fff'; tip.style.padding='8px 12px'; tip.style.borderRadius='8px';
+      document.body.appendChild(tip);
+      setTimeout(()=>tip.remove(),1500);
+    }
+    // อัปเดต CA บนหน้า (เผื่อ public.js โหลดช้ากว่า)
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // ถ้า public.js โหลดก่อน จะมี contractAddress เป็นค่าคงที่
+      if (typeof contractAddress === 'string') {
+        document.getElementById('ca').textContent = contractAddress;
+      }
+    });
+  </script>
+</body>
+</html>
