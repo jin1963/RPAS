@@ -1,0 +1,73 @@
+:root {
+  --bg: #000;
+  --card: #111;
+  --text: gold;
+  --muted: #ccc;
+  --accent: #ffcc33;
+  --ok: #21b36a;
+  --err: #ff4c4c;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Sarabun", sans-serif;
+  margin: 0;
+  text-align: center;
+}
+.card {
+  background: var(--card);
+  margin: 1rem auto;
+  padding: 1rem;
+  max-width: 900px;
+  border-radius: 12px;
+  border: 1px solid #333;
+}
+h1, h2 {
+  color: var(--accent);
+}
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+button {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+button:hover { opacity: 0.9; }
+input {
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #222;
+  color: var(--text);
+}
+.mono { font-family: monospace; }
+.muted { color: var(--muted); }
+.pkg, .stake {
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin-top: 0.5rem;
+}
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: gold;
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 10px 15px;
+  z-index: 9999;
+  display: none;
+}
