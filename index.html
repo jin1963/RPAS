@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KJC Package Referral Auto-Stake</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="card">
+    <h1>🎁 KJC Package Referral Auto-Stake</h1>
+    <div class="row">
+      <button id="btnConnect" class="primary">🔗 เชื่อมต่อกระเป๋า</button>
+      <div id="wallet" class="mono muted">❌ ยังไม่เชื่อมต่อ</div>
+    </div>
+    <div class="muted">📜 Contract: <span id="ca" class="mono">-</span></div>
+  </header>
+
+  <section class="card">
+    <h2>👥 ผู้นำแนะนำ (Referrer)</h2>
+    <div class="row">
+      <input id="refInput" type="text" placeholder="กรอก Address ของผู้นำแนะนำ" />
+      <button id="btnLockRef">บันทึก Referrer</button>
+    </div>
+    <p class="muted">* ระบบจะจำ Referrer นี้ไว้ในเครื่องของคุณ</p>
+  </section>
+
+  <section class="card">
+    <h2>📦 แพ็กเกจที่เปิดให้ซื้อ</h2>
+    <div id="pkgWrap">กำลังโหลดแพ็กเกจ...</div>
+  </section>
+
+  <section class="card">
+    <h2>💰 รายได้จากการแนะนำ</h2>
+    <div class="row">
+      <span>ยอดสะสม: <b id="refUsdt">-</b></span>
+      <button id="btnClaimRef">เคลมรางวัล USDT</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>📈 รายการ Stake ของคุณ</h2>
+    <div id="stakes">กำลังโหลด...</div>
+  </section>
+
+  <div id="toast" class="toast" style="display:none"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.4/dist/web3.min.js"></script>
+  <script src="config.js"></script>
+  <script src="public.js"></script>
+</body>
+</html>
